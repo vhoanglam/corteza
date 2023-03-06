@@ -101,10 +101,10 @@ jobs:
       - name: "Build"
         working-directory: server
         run: make release-clean release
-      - name: "Upload"
-        working-directory: server
-        run: make upload
-        if: ${{ !env.ACT }}
+#      - name: "Upload"
+#        working-directory: server
+#        run: make upload
+#        if: ${{ !env.ACT }}
 
 
 ########################################################################################################################
@@ -388,10 +388,10 @@ jobs:
       - name: "Build & release"
         working-directory: extra/server-discovery/
         run: make release-clean release
-      - name: "Upload"
-        working-directory: extra/server-discovery/
-        run: make upload
-        if: ${{ !env.ACT }}
+#      - name: "Upload"
+#        working-directory: extra/server-discovery/
+#        run: make upload
+#        if: ${{ !env.ACT }}
 
 
 ########################################################################################################################
