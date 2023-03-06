@@ -410,9 +410,9 @@ jobs:
       matrix:
         include:
           # - { context: "extra/server-discovery",     image: "cortezaproject/corteza-server-discovery" }
-          - { context: "client/web",                 image: "cortezaproject/corteza-webapp" }
-          - { context: "server",                     image: "cortezaproject/corteza-server" }
-          - { context: ".",                          image: "cortezaproject/corteza" }
+          - { context: "client/web",                 image: "blazy-corteza/corteza-webapp" }
+          - { context: "server",                     image: "blazy-corteza/corteza-server" }
+          - { context: ".",                          image: "blazy-corteza/corteza" }
 
     steps:
       - uses: actions/checkout@v3
@@ -437,17 +437,23 @@ jobs:
             ${{ matrix.context }}
 
       - name: "Login"
-        uses: docker/login-action@v2
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
         if: ${{ !env.ACT && env.DOCKER_IMAGE_TAG }}
         with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          registry: 424042323274.dkr.ecr.ap-southeast-1.amazonaws.com
+          aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: "Push ${{ env.DOCKER_IMAGE_TAG }}"
         if: ${{ !env.ACT }}
         run: |
+          docker tag \
+            ${{ matrix.image }}:${{ env.DOCKER_IMAGE_TAG }} \
+            424042323274.dkr.ecr.ap-southeast-1.amazonaws.com/${{ matrix.image }}:${{ env.DOCKER_IMAGE_TAG }}
+          
           docker push \
-            ${{ matrix.image }}:${{ env.DOCKER_IMAGE_TAG }}
+            424042323274.dkr.ecr.ap-southeast-1.amazonaws.com/${{ matrix.image }}:${{ env.DOCKER_IMAGE_TAG }}
 
       - name: "Push ${{ env.DOCKER_IMAGE_ALIAS }}"
         if: ${{ !env.ACT && env.DOCKER_IMAGE_ALIAS }}
