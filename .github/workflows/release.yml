@@ -101,10 +101,10 @@ jobs:
       - name: "Build"
         working-directory: server
         run: make release-clean release
-#      - name: "Upload"
-#        working-directory: server
-#        run: make upload
-#        if: ${{ !env.ACT }}
+      - name: "Upload"
+        working-directory: server
+        run: make upload
+        if: ${{ !env.ACT }}
 
 
 ########################################################################################################################
@@ -242,10 +242,10 @@ jobs:
       - name: "Release"
         working-directory: client/web/${{ matrix.app }}
         run: make release
-#      - name: "Upload"
-#        working-directory: client/web/${{ matrix.app }}
-#        run: make upload
-#        if: ${{ !env.ACT }}
+      - name: "Upload"
+        working-directory: client/web/${{ matrix.app }}
+        run: make upload
+        if: ${{ !env.ACT }}
 
 ########################################################################################################################
 
@@ -301,14 +301,14 @@ jobs:
       - name: "Pack all web clients"
         working-directory: client/web
         run: tar -C dist -czf corteza-webapp-${{ env.BUILD_VERSION }}.tar.gz $(dir dist)
-#      - name: "Upload"
-#        working-directory: client/web
-#        run: |
-#          echo ${{ env.RELEASE_SFTP_KEY }} | base64 -d > .upload-rsa && chmod 0400 .upload-rsa
-#          echo "put corteza-webapp-${{ env.BUILD_VERSION }}.tar.gz" | \
-#            sftp -q -o "StrictHostKeyChecking no" -i .upload-rsa ${{ env.RELEASE_SFTP_URI }}
-#          rm -f .upload-rsa
-#        if: ${{ !env.ACT }}
+      - name: "Upload"
+        working-directory: client/web
+        run: |
+          echo ${{ env.RELEASE_SFTP_KEY }} | base64 -d > .upload-rsa && chmod 0400 .upload-rsa
+          echo "put corteza-webapp-${{ env.BUILD_VERSION }}.tar.gz" | \
+            sftp -q -o "StrictHostKeyChecking no" -i .upload-rsa ${{ env.RELEASE_SFTP_URI }}
+          rm -f .upload-rsa
+        if: ${{ !env.ACT }}
 
 
 ########################################################################################################################
@@ -343,14 +343,14 @@ jobs:
       - name: "Pack"
         run: |
           tar -C dist -czf corteza-${{ env.BUILD_VERSION }}-linux-amd64.tar.gz $(dir dist)
-#      - name: "Upload"
-#        run: |
-#          echo ${{ env.RELEASE_SFTP_KEY }} | base64 -d > .upload-rsa
-#          chmod 0400 .upload-rsa
-#          echo "put corteza-${{ env.BUILD_VERSION }}-linux-amd64.tar.gz" | \
-#            sftp -q -o "StrictHostKeyChecking no" -i .upload-rsa ${{ env.RELEASE_SFTP_URI }}
-#          rm -f .upload-rsa
-#        if: ${{ !env.ACT }}
+      - name: "Upload"
+        run: |
+          echo ${{ env.RELEASE_SFTP_KEY }} | base64 -d > .upload-rsa
+          chmod 0400 .upload-rsa
+          echo "put corteza-${{ env.BUILD_VERSION }}-linux-amd64.tar.gz" | \
+            sftp -q -o "StrictHostKeyChecking no" -i .upload-rsa ${{ env.RELEASE_SFTP_URI }}
+          rm -f .upload-rsa
+        if: ${{ !env.ACT }}
 
 ########################################################################################################################
 ########################################################################################################################
@@ -388,10 +388,10 @@ jobs:
       - name: "Build & release"
         working-directory: extra/server-discovery/
         run: make release-clean release
-#      - name: "Upload"
-#        working-directory: extra/server-discovery/
-#        run: make upload
-#        if: ${{ !env.ACT }}
+      - name: "Upload"
+        working-directory: extra/server-discovery/
+        run: make upload
+        if: ${{ !env.ACT }}
 
 
 ########################################################################################################################
