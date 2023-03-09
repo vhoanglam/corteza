@@ -19,7 +19,7 @@ env:
 
   NODE_VERSION: 16
 
-  RELEASE_BASE_URL: "https://storage.blazy.vn/"
+  RELEASE_BASE_URL: "https://storage.blazy.vn"
 
   RELEASE_SFTP_KEY: ${{ secrets.RELEASE_SFTP_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
