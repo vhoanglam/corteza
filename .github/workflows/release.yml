@@ -19,7 +19,12 @@ env:
 
   NODE_VERSION: 16
 
-  RELEASE_BASE_URL: "https://releases.cortezaproject.org/files"
+  RELEASE_BASE_URL: "https://storage.blazy.vn/"
+  RELEASE_SFTP_URI: ""
+  RELEASE_SFTP_KEY: ${{ secrets.RELEASE_SFTP_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+
 
 jobs:
   server-test:
@@ -107,9 +112,9 @@ jobs:
         if: ${{ !env.ACT }}
 
 
-########################################################################################################################
-########################################################################################################################
-# Libs
+  ########################################################################################################################
+  ########################################################################################################################
+  # Libs
 
   lib-test:
     name: "Library test (${{ matrix.lib }})"
@@ -165,17 +170,17 @@ jobs:
         working-directory: lib/${{ matrix.lib }}
         run: npm publish --dry-run
 
-# invalid secret?
-#      - name: "Publish"
-#        working-directory: lib/${{ matrix.lib }}
-#        run: npm publish
-#        env: { NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}" }
-#        if: ${{ !env.ACT }}
+  # invalid secret?
+  #      - name: "Publish"
+  #        working-directory: lib/${{ matrix.lib }}
+  #        run: npm publish
+  #        env: { NODE_AUTH_TOKEN: "${{ secrets.NPM_TOKEN }}" }
+  #        if: ${{ !env.ACT }}
 
 
-########################################################################################################################
-########################################################################################################################
-# Web clients
+  ########################################################################################################################
+  ########################################################################################################################
+  # Web clients
 
 
   client-web-test:
@@ -247,7 +252,7 @@ jobs:
         run: make upload
         if: ${{ !env.ACT }}
 
-########################################################################################################################
+  ########################################################################################################################
 
   client-web-aio-release:
     name: "Web clients (all-in-one release)"
@@ -256,6 +261,7 @@ jobs:
     env:
       RELEASE_SFTP_KEY: ${{ secrets.RELEASE_SFTP_KEY }}
       RELEASE_SFTP_URI: ${{ secrets.RELEASE_SFTP_URI }}
+
     steps:
       - uses: actions/checkout@v3
       - run: echo "BUILD_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
@@ -270,31 +276,31 @@ jobs:
             client/web/dist/privacy
       - name: "Download & unpack one"
         run: |
-          curl --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-one-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-one-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist
       - name: "Download & unpack admin"
         run: |
-          curl --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-admin-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-admin-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist/admin
       - name: "Download & unpack compose"
         run: |
-          curl --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-compose-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-compose-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist/compose
       - name: "Download & unpack workflow"
         run: |
-          curl --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-workflow-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-workflow-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist/workflow
       - name: "Download & unpack reporter"
         run: |
-          curl --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-reporter-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-reporter-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist/reporter
       - name: "Download & unpack discovery"
         run: |
-          curl --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-discovery-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-discovery-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist/discovery
       - name: "Download & unpack privacy"
         run: |
-          curl --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-privacy-${{ env.BUILD_VERSION }}.tar.gz" | \
+          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-privacy-${{ env.BUILD_VERSION }}.tar.gz" | \
             tar -xzmok -C client/web/dist/privacy
       - name: "Copy essentials"
         run: cp *.md DCO LICENSE client/web/dist/
@@ -311,9 +317,9 @@ jobs:
         if: ${{ !env.ACT }}
 
 
-########################################################################################################################
-########################################################################################################################
-# This is where it all comes together
+  ########################################################################################################################
+  ########################################################################################################################
+  # This is where it all comes together
 
 
   release:
@@ -325,7 +331,7 @@ jobs:
       matrix:
         os: [ "linux" ]
     env:
-      ENDPOINT: https://releases.cortezaproject.org/files
+      ENDPOINT: https://storage.blazy.vn/
       RELEASE_SFTP_KEY: ${{ secrets.RELEASE_SFTP_KEY }}
       RELEASE_SFTP_URI: ${{ secrets.RELEASE_SFTP_URI }}
     steps:
@@ -352,9 +358,9 @@ jobs:
           rm -f .upload-rsa
         if: ${{ !env.ACT }}
 
-########################################################################################################################
-########################################################################################################################
-# Discovery
+  ########################################################################################################################
+  ########################################################################################################################
+  # Discovery
 
   extra-server-discovery-test:
     name: "Discovery Server test"
@@ -394,7 +400,7 @@ jobs:
         if: ${{ !env.ACT }}
 
 
-########################################################################################################################
+  ########################################################################################################################
 
 
   docker-images:
