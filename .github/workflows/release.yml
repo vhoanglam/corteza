@@ -274,34 +274,20 @@ jobs:
             client/web/dist/reporter \
             client/web/dist/discovery \
             client/web/dist/privacy
-      - name: "Download & unpack one"
+      - use: keithweaver/aws-s3-github-action@v1.0.0
+      - name: "Download & unpack apps"
         run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-one-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist
-      - name: "Download & unpack admin"
-        run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-admin-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist/admin
-      - name: "Download & unpack compose"
-        run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-compose-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist/compose
-      - name: "Download & unpack workflow"
-        run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-workflow-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist/workflow
-      - name: "Download & unpack reporter"
-        run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-reporter-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist/reporter
-      - name: "Download & unpack discovery"
-        run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-discovery-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist/discovery
-      - name: "Download & unpack privacy"
-        run: |
-          curl -u "${{ env.AWS_ACCESS_KEY_ID }}:${{ env.AWS_SECRET_ACCESS_KEY }}" --silent --location "${{ env.RELEASE_BASE_URL }}/corteza-webapp-privacy-${{ env.BUILD_VERSION }}.tar.gz" | \
-            tar -xzmok -C client/web/dist/privacy
+          apps=("admin" "compose" "workflow" "reporter" "discovery" "privacy")
+          for app in "${apps[@]}"; do
+            source="s3://blazy-storage/corteza-webapp-${app}-${{ env.BUILD_VERSION }}.tar.gz"
+            destination="client/web/dist/${app}/"
+            echo "Downloading and extracting ${source} to ${destination} ..."
+            aws s3 cp "${source}" - | tar -xzf - -C "${destination}"
+          done
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ap-southeast-1
       - name: "Copy essentials"
         run: cp *.md DCO LICENSE client/web/dist/
       - name: "Pack all web clients"
