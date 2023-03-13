@@ -30,10 +30,6 @@ release:
 	@ cp $(RELEASE_EXTRA_FILES) $(BUILD_DEST_DIR)
 	@ tar -C $(BUILD_DEST_DIR) -czf $(RELEASE_NAME) $(dir $(BUILD_DEST_DIR))
 
-upload: $(RELEASE_PKEY)
-	@ echo "put *.tar.gz" | sftp -q -o "StrictHostKeyChecking no" -i $(RELEASE_PKEY) $(RELEASE_SFTP_URI)
-	@ rm -f $(RELEASE_PKEY)
+upload:
+	AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) aws s3 cp $(BUILD_DEST_DIR)/*.tar.gz s3://$(S3_BUCKET)/ --region $(S3_REGION)
 
-$(RELEASE_PKEY):
-	@ echo $(RELEASE_SFTP_KEY) | base64 -d > $(RELEASE_PKEY)
-	@ chmod 0400 $@
