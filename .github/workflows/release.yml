@@ -21,7 +21,7 @@ env:
 
   RELEASE_BASE_URL: "http://storage.blazy.vn"
 
-  S3_BUCKET: "blazy_storage"
+  S3_BUCKET: "blazy-storage"
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
 
