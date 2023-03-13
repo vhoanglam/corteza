@@ -41,13 +41,8 @@ release-clean:
 	rm -rf $(BUILD_DEST_DIR)/$(BUILD_BIN_NAME)
 	rm -rf $(BUILD_DEST_DIR)/$(RELEASE_NAME)
 
-upload: $(RELEASE_PKEY)
-	@ echo "put $(BUILD_DEST_DIR)/*.tar.gz" | sftp -o "StrictHostKeyChecking no" -i $(RELEASE_PKEY) $(RELEASE_SFTP_URI)
-	@ rm -f $(RELEASE_PKEY)
-
-$(RELEASE_PKEY):
-	@ echo $(RELEASE_SFTP_KEY) | base64 -d > $@
-	@ chmod 0400 $@
+upload:
+	AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) aws s3 cp $(BUILD_DEST_DIR)/*.tar.gz s3://$(S3_BUCKET)/
 
 ########################################################################################################################
 # Development
