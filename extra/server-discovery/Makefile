@@ -42,7 +42,7 @@ release-clean:
 	rm -rf $(BUILD_DEST_DIR)/$(RELEASE_NAME)
 
 upload:
-	AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) aws s3 cp $(BUILD_DEST_DIR)/*.tar.gz s3://$(S3_BUCKET)/
+	AWS_ACCESS_KEY_ID=$(AWS_ACCESS_KEY_ID) AWS_SECRET_ACCESS_KEY=$(AWS_SECRET_ACCESS_KEY) aws s3 cp $(BUILD_DEST_DIR)/*.tar.gz s3://$(S3_BUCKET)/ --region $(S3_REGION)
 
 ########################################################################################################################
 # Development
